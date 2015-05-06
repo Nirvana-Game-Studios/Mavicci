@@ -39,7 +39,7 @@ public class OBJLoader {
 					Vector3f vertex = new Vector3f(
 							Float.parseFloat(currentLine[1]),
 							Float.parseFloat(currentLine[2]),
-							Float.parseFloat((currentLine[3])));
+							Float.parseFloat(currentLine[3]));
 					vertices.add(vertex);
 				} else if (line.startsWith("vt ")) {
 					Vector2f texture = new Vector2f(
@@ -50,7 +50,7 @@ public class OBJLoader {
 					Vector3f normal = new Vector3f(
 							Float.parseFloat(currentLine[1]),
 							Float.parseFloat(currentLine[2]),
-							Float.parseFloat((currentLine[3])));
+							Float.parseFloat(currentLine[3]));
 					normals.add(normal);
 				} else if (line.startsWith("f ")) {
 					textureArray = new float[vertices.size() * 2];
@@ -72,6 +72,7 @@ public class OBJLoader {
 				processVertex(vertex1,indices,textures,normals,textureArray,normalsArray);
 				processVertex(vertex2,indices,textures,normals,textureArray,normalsArray);
 				processVertex(vertex3,indices,textures,normals,textureArray,normalsArray);
+				line = reader.readLine();
 			}
 			reader.close();
 		} catch (Exception e) {
@@ -91,7 +92,7 @@ public class OBJLoader {
 		for(int i=0; i < indices.size(); i++){
 			indicesArray[i] = indices.get(i);
 		}
-		return loader.loadToVao(verticesArray, textureArray, indicesArray);
+		return loader.loadToVao(verticesArray, textureArray, indicesArray, normalsArray);
 
 	}
 

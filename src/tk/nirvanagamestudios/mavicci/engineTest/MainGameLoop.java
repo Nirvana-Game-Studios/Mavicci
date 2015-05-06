@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import tk.nirvanagamestudios.mavicci.entities.Camera;
 import tk.nirvanagamestudios.mavicci.entities.Entity;
+import tk.nirvanagamestudios.mavicci.entities.Light;
 import tk.nirvanagamestudios.mavicci.models.RawModel;
 import tk.nirvanagamestudios.mavicci.models.TexturedModel;
 import tk.nirvanagamestudios.mavicci.renderEngine.DisplayManager;
@@ -23,41 +24,44 @@ import tk.nirvanagamestudios.mavicci.textures.ModelTexture;
  * LWJGL Research - Done
  * 2D Testing - Done
  * Shader Colouring - Done
- * 3D Testing - Complete on Friday.
- * Per-pixel Lighting
- * Specular Lighting
+ * 3D Testing - Done
+ * Per-pixel Lighting - Done 
+ * Specular Lighting - Done
  * Terrain
+ * 3D Optimisation
  * Write Storyline
  * Complete Matrix Stuff - Done
  * 
  */
 
 public class MainGameLoop {
-
-	static Loader loader;
-	static StaticShader shader;
 	
 	public static void main(String[] args){
 		DisplayManager displayManager = new DisplayManager();
 		displayManager.createDisplay();
 		
-		loader = new Loader();
-		shader = new StaticShader();
+		Loader loader = new Loader();
+		StaticShader shader = new StaticShader();
 		Renderer renderer = new Renderer(shader);
 		
 		RawModel model = OBJLoader.loadObjModel("stall", loader);
-	
-		ModelTexture texture = new ModelTexture(loader.loadTexture("stallTexture"));
-		TexturedModel staticModel = new TexturedModel(model, texture);
-		Entity entity = new Entity(staticModel, new Vector3f(0,0,-50),0,0,0,1);
+		TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
+		ModelTexture texture = staticModel.getTexture();
+		texture.setReflectivity(1);
+		texture.setShineDamper(10);
+		Entity entity = new Entity(staticModel, new Vector3f(0,0,-25),0,0,0,1);
+		Light light = new Light(new Vector3f(0,0,-20), new Vector3f(1,1,1));
 		
 		Camera camera = new Camera();
 		
+		entity.setRotY(180);
+		entity.setRotX(12);
 		while(!Display.isCloseRequested()){
-			//entity.increaseRotation(1, 1, 0);
-			camera.move();
+			entity.increaseRotation(0, 5, 0);
+			//camera.move();
 			renderer.prepare();
 			shader.start();
+			shader.loadLight(light);
 			shader.loadViewMatrix(camera);
 			renderer.render(entity, shader);
 			shader.stop();

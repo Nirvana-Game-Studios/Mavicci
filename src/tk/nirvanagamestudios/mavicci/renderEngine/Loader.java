@@ -22,12 +22,13 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
 	
-	public RawModel loadToVao(float[] pos, float[] textureCoords, int[] indices){
+	public RawModel loadToVao(float[] pos, float[] textureCoords, int[] indices, float[] normals){
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		vaos.add(vaoID);
 		storeDataInAttributeList(0, 3, pos);
 		storeDataInAttributeList(1, 2, textureCoords);
+		storeDataInAttributeList(2, 3, normals);
 		unbindVao();
 		return new RawModel(vaoID, indices.length);
 	}
