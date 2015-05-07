@@ -50,15 +50,15 @@ public class MainGameLoop {
 		texture.setReflectivity(1);
 		texture.setShineDamper(10);
 		Entity entity = new Entity(staticModel, new Vector3f(0,0,-25),0,0,0,1);
-		Light light = new Light(new Vector3f(0,0,-20), new Vector3f(1,1,1));
+		Light light = new Light(new Vector3f(0,10,-20), new Vector3f(1,1,1));
 		
 		Camera camera = new Camera();
 		
 		entity.setRotY(180);
 		entity.setRotX(12);
 		while(!Display.isCloseRequested()){
-			entity.increaseRotation(0, 5, 0);
-			//camera.move();
+			//entity.increaseRotation(0, 5, 0);
+			camera.move();
 			renderer.prepare();
 			shader.start();
 			shader.loadLight(light);

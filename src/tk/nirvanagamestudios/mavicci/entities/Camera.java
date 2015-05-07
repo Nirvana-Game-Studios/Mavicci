@@ -14,16 +14,16 @@ public class Camera {
 
 	public void move(){
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)){
-			position.z-=0.1;
+			position.z-=0.3;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_D)){
-			position.x+=0.1;
+			position.x+=0.3;
 		}		
 		if(Keyboard.isKeyDown(Keyboard.KEY_A)){
-			position.x-=0.1;
+			position.x-=0.3;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_S)){
-			position.z+=0.1;
+			position.z+=0.3;
 		}
 	}
 	public Vector3f getPosition() {

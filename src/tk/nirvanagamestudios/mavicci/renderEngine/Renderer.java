@@ -1,5 +1,8 @@
 package tk.nirvanagamestudios.mavicci.renderEngine;
 
+import java.util.List;
+import java.util.Map;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -21,8 +24,12 @@ public class Renderer {
 	private static final float FAR_PLANE = 1000f;
 	
 	private Matrix4f projectionMatrix;
+	private StaticShader shader;
 	
 	public Renderer(StaticShader shader){
+		this.shader = shader;
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
 		createProjectionMatrix();
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
@@ -35,6 +42,10 @@ public class Renderer {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
+	public void render(Map<TexturedModel, List<Entity>> entities){
+		
+	}
+	//9:19 EP13
 	public void render(Entity entity, StaticShader shader){
 		TexturedModel model = entity.getModel();
 		RawModel rawModel = model.getRawModel();
