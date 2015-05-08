@@ -1,5 +1,8 @@
 package tk.nirvanagamestudios.mavicci.engineTest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -10,9 +13,8 @@ import tk.nirvanagamestudios.mavicci.models.RawModel;
 import tk.nirvanagamestudios.mavicci.models.TexturedModel;
 import tk.nirvanagamestudios.mavicci.renderEngine.DisplayManager;
 import tk.nirvanagamestudios.mavicci.renderEngine.Loader;
+import tk.nirvanagamestudios.mavicci.renderEngine.MasterRenderer;
 import tk.nirvanagamestudios.mavicci.renderEngine.OBJLoader;
-import tk.nirvanagamestudios.mavicci.renderEngine.Renderer;
-import tk.nirvanagamestudios.mavicci.shaders.StaticShader;
 import tk.nirvanagamestudios.mavicci.textures.ModelTexture;
 
 /*
@@ -36,20 +38,21 @@ import tk.nirvanagamestudios.mavicci.textures.ModelTexture;
 
 public class MainGameLoop {
 	
+	public static List<Entity> entities = new ArrayList<Entity>();
+	
 	public static void main(String[] args){
 		DisplayManager displayManager = new DisplayManager();
 		displayManager.createDisplay();
 		
 		Loader loader = new Loader();
-		StaticShader shader = new StaticShader();
-		Renderer renderer = new Renderer(shader);
+		MasterRenderer renderer = new MasterRenderer();
 		
 		RawModel model = OBJLoader.loadObjModel("stall", loader);
 		TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
 		ModelTexture texture = staticModel.getTexture();
 		texture.setReflectivity(1);
 		texture.setShineDamper(10);
-		Entity entity = new Entity(staticModel, new Vector3f(0,0,-25),0,0,0,1);
+		Entity entity = createEntity(staticModel, new Vector3f(0,0,-25),0,0,0,1);
 		Light light = new Light(new Vector3f(0,10,-20), new Vector3f(1,1,1));
 		
 		Camera camera = new Camera();
@@ -59,18 +62,22 @@ public class MainGameLoop {
 		while(!Display.isCloseRequested()){
 			//entity.increaseRotation(0, 5, 0);
 			camera.move();
-			renderer.prepare();
-			shader.start();
-			shader.loadLight(light);
-			shader.loadViewMatrix(camera);
-			renderer.render(entity, shader);
-			shader.stop();
+			for(Entity e:entities){
+				renderer.processEntity(e);
+			}
+			renderer.render(light, camera);
 			displayManager.updateDisplay();
 		}
 		
 		loader.cleanUp();
-		shader.cleanUp();
+
 		displayManager.stopDisplay();
+	}
+	
+	public static Entity createEntity(TexturedModel model, Vector3f pos, float rotX, float rotY, float rotZ, float scale){
+		Entity entity = new Entity(model, pos, rotX, rotY, rotZ, scale);
+		entities.add(entity);
+		return entity;
 	}
 	
 }
