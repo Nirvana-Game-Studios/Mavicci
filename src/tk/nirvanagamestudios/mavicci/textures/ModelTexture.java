@@ -7,6 +7,8 @@ public class ModelTexture {
 	private int shineDamper = 1;
 	private int reflectivity = 0;
 	
+	private boolean hasTransparency = false;
+	
 	public ModelTexture(int id){
 		this.textureID = id;
 	}
@@ -33,6 +35,14 @@ public class ModelTexture {
 
 	public int getReflectivity() {
 		return reflectivity;
+	}
+
+	public boolean isHasTransparency() {
+		return hasTransparency;
+	}
+
+	public void setHasTransparency(boolean hasTransparency) {
+		this.hasTransparency = hasTransparency;
 	}
 	
 }

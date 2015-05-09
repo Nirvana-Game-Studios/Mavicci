@@ -2,9 +2,11 @@ package tk.nirvanagamestudios.mavicci.terrains;
 
 import tk.nirvanagamestudios.mavicci.models.RawModel;
 import tk.nirvanagamestudios.mavicci.renderEngine.Loader;
-import tk.nirvanagamestudios.mavicci.textures.ModelTexture;
+import tk.nirvanagamestudios.mavicci.textures.TerrainTexture;
+import tk.nirvanagamestudios.mavicci.textures.TerrainTexturePack;
 
 public class Terrain {
+
 
 	private static final float SIZE = 800;
 	private static final int VERTEX_COUNT = 128;
@@ -12,15 +14,25 @@ public class Terrain {
 	private float x;
 	private float z;
 	private RawModel model;
-	private ModelTexture texture;
+	private TerrainTexturePack texturePack;
+	private TerrainTexture blendMap;
 	
-	public Terrain(int gridX, int gridZ, Loader loader, ModelTexture texture){
-		this.texture = texture;
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap){
+		this.texturePack = texturePack;
+		this.blendMap = blendMap;
 		this.x = gridX * SIZE;
 		this.z = gridZ * SIZE;
 		this.model = generateTerrain(loader);
 	}
 	
+	public TerrainTexturePack getTexturePack() {
+		return texturePack;
+	}
+
+	public TerrainTexture getBlendMap() {
+		return blendMap;
+	}
+
 	private RawModel generateTerrain(Loader loader){
 		int count = VERTEX_COUNT * VERTEX_COUNT;
 		float[] vertices = new float[count * 3];
@@ -57,6 +69,38 @@ public class Terrain {
 			}
 		}
 		return loader.loadToVao(vertices, textureCoords, indices, normals);
+	}
+	
+	public float getX() {
+		return x;
+	}
+	
+	public void setX(float x) {
+		this.x = x;
+	}
+	
+	public float getZ() {
+		return z;
+	}
+	
+	public void setZ(float z) {
+		this.z = z;
+	}
+	
+	public RawModel getModel() {
+		return model;
+	}
+	
+	public void setModel(RawModel model) {
+		this.model = model;
+	}
+	
+	public static float getSize() {
+		return SIZE;
+	}
+	
+	public static int getVertexCount() {
+		return VERTEX_COUNT;
 	}
 	
 }
