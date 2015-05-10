@@ -1,5 +1,6 @@
 package tk.nirvanagamestudios.mavicci.engineTest;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -10,6 +11,7 @@ import org.lwjgl.util.vector.Vector3f;
 import tk.nirvanagamestudios.mavicci.entities.Camera;
 import tk.nirvanagamestudios.mavicci.entities.Entity;
 import tk.nirvanagamestudios.mavicci.entities.Light;
+import tk.nirvanagamestudios.mavicci.entities.Player;
 import tk.nirvanagamestudios.mavicci.models.RawModel;
 import tk.nirvanagamestudios.mavicci.models.TexturedModel;
 import tk.nirvanagamestudios.mavicci.renderEngine.DisplayManager;
@@ -28,6 +30,7 @@ import tk.nirvanagamestudios.mavicci.textures.TerrainTexturePack;
  * OpenGL Research - Done - 09/05/15
  * Graphics Research - Done - 09/05/15
  * LWJGL Research - Done - 09/05/15
+ * Trigonometry Research - Done - 09/05/15
  * 2D Testing - Done - 09/05/15
  * Shader Colouring - Done - 09/05/15
  * 3D Testing - Done - 09/05/15
@@ -38,13 +41,13 @@ import tk.nirvanagamestudios.mavicci.textures.TerrainTexturePack;
  * Write Storyline
  * Complete Matrix Stuff - Done - 09/05/15
  * Transparent Compatibility - Done - 09/05/15
- * Multitexturing Terrain
+ * Multitexturing Terrain - Done - 09/05/15
  * Fog - Done - 09/05/15
- * Mipmapping
- * Heightmaps
+ * Mipmapping - Done  - 10/05/15
+ * Heightmaps 
  * Terrain Collision
- * Player Movement
- * 3rd Person Camera
+ * Player Movement - Done - 10/05/15
+ * 3rd Person Camera - Done - 10/05/15
  */
 
 public class MainGameLoop {
@@ -53,8 +56,9 @@ public class MainGameLoop {
 	public static List<Terrain> terrains = new ArrayList<Terrain>();
 	public static MasterRenderer renderer;
 	public static Random random = new Random();
-
+	
 	public static void main(String[] args) {
+		System.setProperty("org.lwjgl.librarypath", new File("natives/windows/").getAbsolutePath());
 		DisplayManager displayManager = new DisplayManager();
 		displayManager.createDisplay();
 
@@ -68,12 +72,17 @@ public class MainGameLoop {
 		texture.setReflectivity(1);
 		texture.setShineDamper(10);
 		Entity entity = createEntity(staticModel, new Vector3f(0, 0, -25), 0,
-				0, 0, 1, 1);
+				0, 0, 1, 5);
 		Entity grass = createEntity(new TexturedModel(OBJLoader.loadObjModel(
 				"grassModel", loader), new ModelTexture(
 						loader.loadTexture("grassTexture"))), new Vector3f(
 								random.nextFloat() * 800 - 400, 1, random.nextFloat() * -600), 0, 0, 0,
 				1, 100);
+		
+		RawModel player = OBJLoader.loadObjModel("player", loader);
+		ModelTexture playerTexture = new ModelTexture(loader.loadTexture("playerTexture"));
+		TexturedModel playerModel = new TexturedModel(player, playerTexture);
+		Player playerEntity = new Player(playerModel, new Vector3f(-100, 0, -50), 0, 0, 0, 1);
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("path"));
@@ -89,15 +98,17 @@ public class MainGameLoop {
 		// ModelTexture(loader.loadTexture("grass")));
 		Light light = new Light(new Vector3f(0, 10, -20), new Vector3f(1, 1, 1));
 
-		Camera camera = new Camera();
+		Camera camera = new Camera(playerEntity);
 
 		entity.setRotY(180);
 		entity.setPosition(new Vector3f(-30, 1, -16));
 		while (!Display.isCloseRequested()) {
 			// entity.increaseRotation(0, 5, 0);
 			camera.move();
+			playerEntity.move();
 			renderer.processEntity(grass);
 			renderer.processEntity(entity);
+			renderer.processEntity(playerEntity);
 			renderer.processTerrain(terrain);
 			// renderer.processTerrain(terrain1);
 			// processAll();
@@ -119,5 +130,6 @@ public class MainGameLoop {
 		}
 		return entity;
 	}
+
 
 }
