@@ -26,7 +26,7 @@ public class DisplayManager {
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 			Display.setTitle("Mavicci");
 			Display.create(new PixelFormat(), attribs);
-			Mouse.setGrabbed(true);
+			//Mouse.setGrabbed(true);
 		}catch(LWJGLException e){
 			e.printStackTrace();
 		}

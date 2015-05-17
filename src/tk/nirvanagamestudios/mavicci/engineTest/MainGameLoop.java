@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import tk.nirvanagamestudios.mavicci.entities.Camera;
@@ -25,6 +25,7 @@ import tk.nirvanagamestudios.mavicci.terrains.Terrain;
 import tk.nirvanagamestudios.mavicci.textures.ModelTexture;
 import tk.nirvanagamestudios.mavicci.textures.TerrainTexture;
 import tk.nirvanagamestudios.mavicci.textures.TerrainTexturePack;
+import tk.nirvanagamestudios.mavicci.util.MousePicker;
 
 /*
  * To-do list
@@ -51,14 +52,21 @@ import tk.nirvanagamestudios.mavicci.textures.TerrainTexturePack;
  * Heightmaps - Done - 10/05/15
  * Player Movement - Done - 10/05/15
  * 3rd Person Camera - Done - 10/05/15
+ * Texture Atlas - Done - 16/05/15
+ * Skybox
+ * Multiple Lights
+ * Point Lights
+ * Day and Night Cycle
+ * Mouse Picking
  */
+
 
 public class MainGameLoop {
 
 	public static List<Entity> entities = new ArrayList<Entity>();
 	public static List<Terrain> terrains = new ArrayList<Terrain>();
+	public static List<Light> lights = new ArrayList<Light>();
 	public static MasterRenderer renderer;
-	public static Random random = new Random();
 	
 	public static void main(String[] args) {
 		System.setProperty("org.lwjgl.librarypath", new File("natives/windows/").getAbsolutePath());
@@ -67,25 +75,21 @@ public class MainGameLoop {
 
 		Loader loader = new Loader();
 		renderer = new MasterRenderer();
-
-		RawModel model = OBJLoader.loadObjModel("stall", loader);
-		TexturedModel staticModel = new TexturedModel(model, new ModelTexture(
-				loader.loadTexture("stallTexture")));
-		ModelTexture texture = staticModel.getTexture();
-		texture.setReflectivity(1);
-		texture.setShineDamper(10);
-		Entity entity = createEntity(staticModel, new Vector3f(0, 0, -25), 0,
-				0, 0, 1, 5);
-		Entity grass = createEntity(new TexturedModel(OBJLoader.loadObjModel(
-				"grassModel", loader), new ModelTexture(
-						loader.loadTexture("grassTexture"))), new Vector3f(
-								random.nextFloat() * 800 - 400, 1, random.nextFloat() * -600), 0, 0, 0,
-				1, 100);
 		
-		RawModel player = OBJLoader.loadObjModel("player", loader);
-		ModelTexture playerTexture = new ModelTexture(loader.loadTexture("playerTexture"));
-		TexturedModel playerModel = new TexturedModel(player, playerTexture);
-		Player playerEntity = new Player(playerModel, new Vector3f(-100, 200, -50), 0, 0, 0, 1);
+		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
+		fernTextureAtlas.setNumberOfRows(2);
+		fernTextureAtlas.setHasTransparency(true);
+		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader), fernTextureAtlas);
+		
+		ModelTexture treeTexture = new ModelTexture(loader.loadTexture("tree"));
+		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("tree", loader), treeTexture);
+		
+		ModelTexture pineTexture = new ModelTexture(loader.loadTexture("pine"));
+		TexturedModel pine = new TexturedModel(OBJLoader.loadObjModel("pine", loader), pineTexture);
+
+		ModelTexture lampTexture = new ModelTexture(loader.loadTexture("lamp"));
+		TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader), lampTexture);
+		Entity lampEntity = createEntity(lamp, new Vector3f(0,0,0),0f,0f,0f,1f,1);
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("path"));
@@ -96,38 +100,90 @@ public class MainGameLoop {
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 		
 		Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
-		grass.getModel().getTexture().setHasTransparency(true);
-		// Terrain terrain1 = new Terrain(1,-1, loader, new
-		// ModelTexture(loader.loadTexture("grass")));
-		Light light = new Light(new Vector3f(0, 20000, 20000), new Vector3f(1, 1, 1));
-
+		//Terrain terrain1 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
+		
+		Random random = new Random(676452);
+		for(int i = 0; i < 400; i++){
+			if(i % 2 == 0){
+				float x = random.nextFloat() * 800 - 400;
+				float z = random.nextFloat() * -600;
+				float y = terrain.getHeightOfTerrain(x, z);
+				
+				entities.add(new Entity(fern, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 0.9f, random.nextInt(4)));
+			}
+			if(i % 4 == 0){
+				float x = random.nextFloat() * 800 - 400;
+				float z = random.nextFloat() * -600;
+				float y = terrain.getHeightOfTerrain(x, z);
+				
+				entities.add(new Entity(pine, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
+			}
+			if(i % 5 == 0){
+				float x = random.nextFloat() * 800 - 400;
+				float z = random.nextFloat() * -600;
+				float y = terrain.getHeightOfTerrain(x, z);
+				
+				lights.add(new Light(new Vector3f(x, y + 12.8f, z), new Vector3f(1,1,1)));
+				entities.add(new Entity(lamp, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
+			}
+			if(i % 6 == 0){
+				float x = random.nextFloat() * 800 - 400;
+				float z = random.nextFloat() * -600;
+				float y = terrain.getHeightOfTerrain(x, z);
+				
+				entities.add(new Entity(tree, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
+			}
+		}
+		
+		
+		RawModel player = OBJLoader.loadObjModel("player", loader);
+		ModelTexture playerTexture = new ModelTexture(loader.loadTexture("playerTexture"));
+		TexturedModel playerModel = new TexturedModel(player, playerTexture);
+		Player playerEntity = new Player(playerModel, new Vector3f(-250, terrain.getHeightOfTerrain(terrain.getX(), terrain.getZ()), -290), 0, 0, 0, 1);
+		
+		Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1));
+		lights.add(light);
+		//lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(1,1,1)));
+		
 		Camera camera = new Camera(playerEntity);
 
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
-		GuiTexture gui = new GuiTexture(loader.loadTexture("logo"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-		guis.add(gui);
+		//GuiTexture gui = new GuiTexture(loader.loadTexture("logo"), new Vector2f(1f, 1f), new Vector2f(0.25f, 0.25f));
+		//guis.add(gui);
 		
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
-		entity.setRotY(180);
-		entity.setPosition(new Vector3f(-30, 1, -16));
+		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+		
 		while (!Display.isCloseRequested()) {
 			// entity.increaseRotation(0, 5, 0);
 			camera.move();
 			playerEntity.move(terrain);
-			renderer.processEntity(grass);
-			renderer.processEntity(entity);
-			renderer.processEntity(playerEntity);
+			
+			picker.update();
+			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
+			if(terrainPoint!=null){
+				if(Mouse.isButtonDown(1)){
+					lampEntity.setPosition(lampEntity.getPosition());
+				}else{
+					lampEntity.setPosition(terrainPoint);
+				}
+			}
+			
+			for(Entity e:entities){				
+				renderer.processEntity(e);
+			}
+			renderer.processEntity (playerEntity);
 			renderer.processTerrain(terrain);
-			// renderer.processTerrain(terrain1);
-			// processAll();
-			renderer.render(light, camera);
+			//renderer.processTerrain(terrain1);
+			renderer.render(lights, camera);
 			guiRenderer.render(guis);
 			displayManager.updateDisplay();
 		}
 
+		guiRenderer.cleanUp();
+		renderer.cleanUp();
 		loader.cleanUp();
-
 		displayManager.stopDisplay();
 	}
 

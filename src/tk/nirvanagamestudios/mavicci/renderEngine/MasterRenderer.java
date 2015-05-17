@@ -60,17 +60,17 @@ public class MasterRenderer {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
-	public void render(Light sun, Camera camera){
+	public void render(List<Light> lights, Camera camera){
 		prepare();
 		shader.start();
 		shader.loadSkyColour(RED, GREEN, BLUE);
-		shader.loadLight(sun);
+		shader.loadLights(lights);
 		shader.loadViewMatrix(camera);
 		renderer.render(entities);
 		shader.stop();
 		terrainShader.start();
 		terrainShader.loadSkyColour(RED, GREEN, BLUE);
-		terrainShader.loadLight(sun);
+		terrainShader.loadLights(lights);
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
@@ -97,6 +97,10 @@ public class MasterRenderer {
 	public void cleanUp(){
 		shader.cleanUp();
 		terrainShader.cleanUp();
+	}
+	
+	public Matrix4f getProjectionMatrix(){
+		return projectionMatrix;
 	}
 	
 	private void createProjectionMatrix(){
