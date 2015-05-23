@@ -53,9 +53,8 @@ import tk.nirvanagamestudios.mavicci.util.MousePicker;
  * Player Movement - Done - 10/05/15
  * 3rd Person Camera - Done - 10/05/15
  * Texture Atlas - Done - 16/05/15
- * Skybox
- * Multiple Lights
- * Point Lights
+ * Multiple Lights - Done - 17/05/15
+ * Point Lights - 17/05/15
  * Day and Night Cycle
  * Mouse Picking
  */
@@ -88,7 +87,9 @@ public class MainGameLoop {
 		TexturedModel pine = new TexturedModel(OBJLoader.loadObjModel("pine", loader), pineTexture);
 
 		ModelTexture lampTexture = new ModelTexture(loader.loadTexture("lamp"));
+		lampTexture.setUseFakeLighting(true);
 		TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader), lampTexture);
+		lamp.getTexture().setUseFakeLighting(true);
 		Entity lampEntity = createEntity(lamp, new Vector3f(0,0,0),0f,0f,0f,1f,1);
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
@@ -123,7 +124,7 @@ public class MainGameLoop {
 				float z = random.nextFloat() * -600;
 				float y = terrain.getHeightOfTerrain(x, z);
 				
-				lights.add(new Light(new Vector3f(x, y + 12.8f, z), new Vector3f(1,1,1)));
+				lights.add(new Light(new Vector3f(x, y + 12f, z), new Vector3f(1,0,0), new Vector3f(1, 0.01f, 0.002f)));
 				entities.add(new Entity(lamp, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
 			}
 			if(i % 6 == 0){
@@ -141,8 +142,10 @@ public class MainGameLoop {
 		TexturedModel playerModel = new TexturedModel(player, playerTexture);
 		Player playerEntity = new Player(playerModel, new Vector3f(-250, terrain.getHeightOfTerrain(terrain.getX(), terrain.getZ()), -290), 0, 0, 0, 1);
 		
-		Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1));
+		Light light = new Light(new Vector3f(0f, 10000f, -7000f), new Vector3f(1f, 1f, 1f));
+		Light lampLight = new Light(new Vector3f(lampEntity.getPosition().x, lampEntity.getPosition().y + 12f, lampEntity.getPosition().z), new Vector3f(1f,1f,1f), new Vector3f(1f, 0.6f, 0.009f));
 		lights.add(light);
+		lights.add(lampLight);
 		//lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(1,1,1)));
 		
 		Camera camera = new Camera(playerEntity);
@@ -164,8 +167,10 @@ public class MainGameLoop {
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
 			if(terrainPoint!=null){
 				if(Mouse.isButtonDown(1)){
+					lampLight.setPosition(new Vector3f(lampEntity.getPosition().x, lampEntity.getPosition().y + 12f, lampEntity.getPosition().z));
 					lampEntity.setPosition(lampEntity.getPosition());
 				}else{
+					lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 12f, terrainPoint.z));
 					lampEntity.setPosition(terrainPoint);
 				}
 			}
