@@ -8,6 +8,7 @@ import java.util.Map;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import tk.nirvanagamestudios.mavicci.entities.Camera;
 import tk.nirvanagamestudios.mavicci.entities.Entity;
@@ -15,6 +16,7 @@ import tk.nirvanagamestudios.mavicci.entities.Light;
 import tk.nirvanagamestudios.mavicci.models.TexturedModel;
 import tk.nirvanagamestudios.mavicci.shaders.StaticShader;
 import tk.nirvanagamestudios.mavicci.shaders.TerrainShader;
+import tk.nirvanagamestudios.mavicci.skybox.SkyboxRenderer;
 import tk.nirvanagamestudios.mavicci.terrains.Terrain;
 
 public class MasterRenderer {
@@ -37,12 +39,15 @@ public class MasterRenderer {
 	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private List<Terrain> terrains = new ArrayList<Terrain>();
+
+	private SkyboxRenderer skyboxRenderer;
 	
-	public MasterRenderer(){
+	public MasterRenderer(Loader loader){
 		enableCulling();
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 	}
 	
 	public static void enableCulling(){
@@ -74,6 +79,7 @@ public class MasterRenderer {
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
+		skyboxRenderer.render(camera, RED, GREEN, BLUE);
 		terrains.clear();
 		entities.clear();
 	}

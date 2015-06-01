@@ -13,7 +13,7 @@ import org.lwjgl.util.vector.Vector3f;
 import tk.nirvanagamestudios.mavicci.models.RawModel;
 
 public class OBJLoader {
-
+	
 	public static RawModel loadObjModel(String fileName, Loader loader) {
 		FileReader fr = null;
 		try {
@@ -92,7 +92,7 @@ public class OBJLoader {
 		for(int i=0; i < indices.size(); i++){
 			indicesArray[i] = indices.get(i);
 		}
-		return loader.loadToVao(verticesArray, textureArray, indicesArray, normalsArray);
+		return loader.loadToVao(verticesArray, textureArray, indicesArray, normalsArray, fileName);
 
 	}
 

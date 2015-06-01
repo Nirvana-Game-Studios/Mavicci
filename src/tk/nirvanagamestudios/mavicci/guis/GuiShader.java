@@ -6,8 +6,8 @@ import tk.nirvanagamestudios.mavicci.shaders.ShaderProgram;
 
 public class GuiShader extends ShaderProgram{
 	
-	private static final String VERTEX_FILE = "res/shaders/guiVertexShader.txt";
-	private static final String FRAGMENT_FILE = "res/shaders/guiFragmentShader.txt";
+	private static final String VERTEX_FILE = "res/shaders/guiVertexShader.vert";
+	private static final String FRAGMENT_FILE = "res/shaders/guiFragmentShader.frag";
 	
 	private int location_transformationMatrix;
 

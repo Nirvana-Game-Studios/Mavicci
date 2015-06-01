@@ -26,6 +26,7 @@ import tk.nirvanagamestudios.mavicci.textures.ModelTexture;
 import tk.nirvanagamestudios.mavicci.textures.TerrainTexture;
 import tk.nirvanagamestudios.mavicci.textures.TerrainTexturePack;
 import tk.nirvanagamestudios.mavicci.util.MousePicker;
+import tk.nirvanagamestudios.mavicci.world.WorldReader;
 
 /*
  * To-do list
@@ -54,9 +55,10 @@ import tk.nirvanagamestudios.mavicci.util.MousePicker;
  * 3rd Person Camera - Done - 10/05/15
  * Texture Atlas - Done - 16/05/15
  * Multiple Lights - Done - 17/05/15
- * Point Lights - 17/05/15
+ * Point Lights - Done - 26/05/15
  * Day and Night Cycle
- * Mouse Picking
+ * Skybox
+ * Mouse Picking - Done - 26/17/15
  */
 
 
@@ -66,6 +68,7 @@ public class MainGameLoop {
 	public static List<Terrain> terrains = new ArrayList<Terrain>();
 	public static List<Light> lights = new ArrayList<Light>();
 	public static MasterRenderer renderer;
+	public static Random random = new Random(676452);
 	
 	public static void main(String[] args) {
 		System.setProperty("org.lwjgl.librarypath", new File("natives/windows/").getAbsolutePath());
@@ -73,12 +76,18 @@ public class MainGameLoop {
 		displayManager.createDisplay();
 
 		Loader loader = new Loader();
-		renderer = new MasterRenderer();
+		renderer = new MasterRenderer(loader);
 		
 		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
 		fernTextureAtlas.setNumberOfRows(2);
 		fernTextureAtlas.setHasTransparency(true);
 		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader), fernTextureAtlas);
+		
+		ModelTexture grassTexture = new ModelTexture(loader.loadTexture("grassTexture"));
+		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), grassTexture);
+		
+		ModelTexture stallTexture = new ModelTexture(loader.loadTexture("stallTexture"));
+		TexturedModel stall = new TexturedModel(OBJLoader.loadObjModel("stall", loader), stallTexture);
 		
 		ModelTexture treeTexture = new ModelTexture(loader.loadTexture("tree"));
 		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("tree", loader), treeTexture);
@@ -90,7 +99,6 @@ public class MainGameLoop {
 		lampTexture.setUseFakeLighting(true);
 		TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader), lampTexture);
 		lamp.getTexture().setUseFakeLighting(true);
-		Entity lampEntity = createEntity(lamp, new Vector3f(0,0,0),0f,0f,0f,1f,1);
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("path"));
@@ -103,7 +111,41 @@ public class MainGameLoop {
 		Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
 		//Terrain terrain1 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
 		
-		Random random = new Random(676452);
+		RawModel player = OBJLoader.loadObjModel("player", loader);
+		ModelTexture playerTexture = new ModelTexture(loader.loadTexture("playerTexture"));
+		TexturedModel playerModel = new TexturedModel(player, playerTexture);
+		Player playerEntity = new Player(playerModel, new Vector3f(-239.43553f, terrain.getHeightOfTerrain(terrain.getX(), terrain.getZ()), -265.49652f), 0, 0, 0, 1);
+		
+		Light light = new Light(new Vector3f(0f, 10000f, -7000f), new Vector3f(0.f, 0.f, 0.f));
+		lights.add(light);
+		for(int i = 0; i < 4; i++){
+			float x, y, z;
+			if(i >= 3){
+				x = random.nextFloat() * 800 - 400;
+				z = random.nextFloat() * -600;
+				y = terrain.getHeightOfTerrain(x, z);
+			}else{
+				x = -156.94044f;
+				z = -292.38776f;
+				y = terrain.getHeightOfTerrain(x, z);
+			}
+
+			Light lampLight = new Light(new Vector3f(x + 7, y + 12f, z), new Vector3f(1f,1f,1f), new Vector3f(1f, 0.01f, 0.002f));
+			Entity lampEntity = new Entity(lamp, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1, 1);
+			lights.add(lampLight);
+			entities.add(lampEntity);
+		}
+		//lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(1,1,1)));
+		
+		Camera camera = new Camera(playerEntity);
+
+		List<GuiTexture> guis = new ArrayList<GuiTexture>();
+		//GuiTexture gui = new GuiTexture(loader.loadTexture("logo"), new Vector2f(1f, 1f), new Vector2f(0.25f, 0.25f));
+		//guis.add(gui);
+		
+		GuiRenderer guiRenderer = new GuiRenderer(loader);
+		
+		
 		for(int i = 0; i < 400; i++){
 			if(i % 2 == 0){
 				float x = random.nextFloat() * 800 - 400;
@@ -119,13 +161,12 @@ public class MainGameLoop {
 				
 				entities.add(new Entity(pine, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
 			}
-			if(i % 5 == 0){
+			if(i % 3 == 0){
 				float x = random.nextFloat() * 800 - 400;
 				float z = random.nextFloat() * -600;
 				float y = terrain.getHeightOfTerrain(x, z);
 				
-				lights.add(new Light(new Vector3f(x, y + 12f, z), new Vector3f(1,0,0), new Vector3f(1, 0.01f, 0.002f)));
-				entities.add(new Entity(lamp, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
+				entities.add(new Entity(grass, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
 			}
 			if(i % 6 == 0){
 				float x = random.nextFloat() * 800 - 400;
@@ -136,45 +177,31 @@ public class MainGameLoop {
 			}
 		}
 		
+		//MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+		List<Entity> worldEntities = WorldReader.loadWorld("world", loader);
 		
-		RawModel player = OBJLoader.loadObjModel("player", loader);
-		ModelTexture playerTexture = new ModelTexture(loader.loadTexture("playerTexture"));
-		TexturedModel playerModel = new TexturedModel(player, playerTexture);
-		Player playerEntity = new Player(playerModel, new Vector3f(-250, terrain.getHeightOfTerrain(terrain.getX(), terrain.getZ()), -290), 0, 0, 0, 1);
-		
-		Light light = new Light(new Vector3f(0f, 10000f, -7000f), new Vector3f(1f, 1f, 1f));
-		Light lampLight = new Light(new Vector3f(lampEntity.getPosition().x, lampEntity.getPosition().y + 12f, lampEntity.getPosition().z), new Vector3f(1f,1f,1f), new Vector3f(1f, 0.6f, 0.009f));
-		lights.add(light);
-		lights.add(lampLight);
-		//lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(1,1,1)));
-		
-		Camera camera = new Camera(playerEntity);
-
-		List<GuiTexture> guis = new ArrayList<GuiTexture>();
-		//GuiTexture gui = new GuiTexture(loader.loadTexture("logo"), new Vector2f(1f, 1f), new Vector2f(0.25f, 0.25f));
-		//guis.add(gui);
-		
-		GuiRenderer guiRenderer = new GuiRenderer(loader);
-		
-		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
-		
+		for(Entity e:worldEntities){
+			e.setPosition(new Vector3f(e.getPosition().x, terrain.getHeightOfTerrain(e.getPosition().x, e.getPosition().z), e.getPosition().z));
+			entities.add(e);
+		}
+		Entity entity = new Entity(pine, new Vector3f(0,0,0), 0, 0, 0, 1f);
+		entities.add(entity);
 		while (!Display.isCloseRequested()) {
 			// entity.increaseRotation(0, 5, 0);
 			camera.move();
 			playerEntity.move(terrain);
-			
-			picker.update();
+			/*picker.update();
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-			if(terrainPoint!=null){
-				if(Mouse.isButtonDown(1)){
-					lampLight.setPosition(new Vector3f(lampEntity.getPosition().x, lampEntity.getPosition().y + 12f, lampEntity.getPosition().z));
-					lampEntity.setPosition(lampEntity.getPosition());
+			//entity.setPosition(terrainPoint);
+			if(terrainPoint != null){
+				if(Mouse.isButtonDown(0)){
+					entity.setPosition(terrainPoint);
 				}else{
-					lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 12f, terrainPoint.z));
-					lampEntity.setPosition(terrainPoint);
+					entity.setPosition(entity.getPosition());
 				}
 			}
-			
+			*/
+			System.out.println(playerEntity.getPosition());
 			for(Entity e:entities){				
 				renderer.processEntity(e);
 			}

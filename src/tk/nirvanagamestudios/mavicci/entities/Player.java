@@ -23,6 +23,10 @@ public class Player extends Entity {
       float rotationY, float rotationZ, float scale) {
     super(model, position, rotationX, rotationY, rotationZ, scale);
   }
+  
+  public Player(Entity e){
+	  super(e.getModel(),e.getPosition(),e.getRotX(),e.getRotY(),e.getRotZ(),e.getScale());
+  }
 
   public void move(Terrain terrain) {
     checkInputs();

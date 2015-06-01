@@ -1,0 +1,92 @@
+en
+POS -227.13564 16.132622 -271.63354
+ROT 0.0 0.0 0.0
+S 1.0
+M pine
+T pine
+en
+POS -256.98523 15.916946 -272.01163
+ROT 0.0 0.0 0.0
+S 1.0
+M pine
+T pine
+en
+POS -241.78743 14.904907 -270.742
+ROT 0.0 0.0 0.0
+S 2.1999998
+M stall
+T stallTexture
+en
+POS -212.13858 15.879417 -261.15167
+ROT 0.0 0.0 0.0
+S 3.3999996
+M grassModel
+T grassTexture
+en
+POS -212.13858 15.879417 -261.15167
+ROT 0.0 0.0 0.0
+S 3.3999996
+M grassModel
+T grassTexture
+en
+POS -259.1109 15.5294075 -296.8403
+ROT 0.0 0.0 0.0
+S 3.3999996
+M grassModel
+T grassTexture
+en
+POS -238.92497 15.861055 -306.07147
+ROT 0.0 0.0 0.0
+S 3.3999996
+M grassModel
+T grassTexture
+en
+POS -238.92497 15.861055 -306.07147
+ROT 0.0 0.0 0.0
+S 3.3999996
+M grassModel
+T grassTexture
+en
+POS -269.0733 17.098034 -259.49487
+ROT 0.0 0.0 0.0
+S 3.3999996
+M grassModel
+T grassTexture
+en
+POS -269.0733 17.098034 -259.49487
+ROT 0.0 0.0 0.0
+S 3.3999996
+M grassModel
+T grassTexture
+en
+POS -285.08923 15.049368 -275.9424
+ROT 0.0 0.0 0.0
+S 0.99999976
+M pine
+T pine
+en
+POS -285.08923 15.049368 -275.9424
+ROT 0.0 0.0 0.0
+S 0.99999976
+M pine
+T pine
+en
+POS -207.4429 15.93301 -264.7297
+ROT 0.0 0.0 0.0
+S 0.99999976
+M pine
+T pine
+en
+POS -263.6161 16.067226 -221.34277
+ROT 0.0 0.0 0.0
+S 1.0
+M pine
+T pine
+en
+POS -229.85329 12.520372 -216.90216
+ROT 0.0 0.0 0.0
+S 2.1999998
+M stall
+T stallTexture
+en
+end

@@ -145,6 +145,8 @@ public class Terrain {
 		return answer;
 	}
 	
+	
+	
 	public float getX() {
 		return x;
 	}

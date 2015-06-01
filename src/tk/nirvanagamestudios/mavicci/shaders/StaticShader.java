@@ -12,8 +12,8 @@ import tk.nirvanagamestudios.mavicci.util.Maths;
 
 public class StaticShader extends ShaderProgram{
 	
-	private static final String VERTEX_FILE = "res/shaders/vertexShader.txt";
-	private static final String FRAGMENT_FILE = "res/shaders/fragmentShader.txt";
+	private static final String VERTEX_FILE = "res/shaders/vertexShader.vert";
+	private static final String FRAGMENT_FILE = "res/shaders/fragmentShader.frag";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -88,7 +88,7 @@ public class StaticShader extends ShaderProgram{
 	
 	public void loadLights(List<Light> lights){
 		for(int i = 0; i <MAX_LIGHTS; i++){
-			if(i>lights.size()){
+			if(i<lights.size()){
 				super.loadVector(location_lightPosition[i], lights.get(i).getPosition());
 				super.loadVector(location_lightColour[i], lights.get(i).getColour());
 				super.loadVector(location_attenuation[i], lights.get(i).getAttenuation());

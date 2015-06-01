@@ -11,8 +11,8 @@ import tk.nirvanagamestudios.mavicci.util.Maths;
 
 public class TerrainShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "res/shaders/terrainVertexShader.txt";
-	private static final String FRAGMENT_FILE = "res/shaders/terrainFragmentShader.txt";
+	private static final String VERTEX_FILE = "res/shaders/terrainVertexShader.vert";
+	private static final String FRAGMENT_FILE = "res/shaders/terrainFragmentShader.frag";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -85,16 +85,16 @@ public class TerrainShader extends ShaderProgram {
 		super.loadMatrix(location_transformationMatrix, matrix);
 	}
 
-	public void loadLights(List<Light> lights) {
-		for (int i = 0; i < MAX_LIGHTS; i++) {
-			if (i < lights.size()) {
+	public void loadLights(List<Light> lights){
+		for(int i = 0; i <MAX_LIGHTS; i++){
+			if(i<lights.size()){
 				super.loadVector(location_lightPosition[i], lights.get(i).getPosition());
 				super.loadVector(location_lightColour[i], lights.get(i).getColour());
 				super.loadVector(location_attenuation[i], lights.get(i).getAttenuation());
-			} else {
-				super.loadVector(location_lightPosition[i], new Vector3f(0, 0, 0));
-				super.loadVector(location_lightColour[i], new Vector3f(0, 0, 0));
-				super.loadVector(location_attenuation[i], new Vector3f(1, 0, 0));
+			}else{
+				super.loadVector(location_lightPosition[i], new Vector3f(0,0,0));
+				super.loadVector(location_lightColour[i],  new Vector3f(0,0,0));
+				super.loadVector(location_attenuation[i], new Vector3f(1,0,0));
 			}
 		}
 	}
