@@ -86,6 +86,25 @@ public class Camera {
 			float angleChange = Mouse.getDX() * 0.3f;
 			angleAroundPlayer -= angleChange;
 		}
+		if(player.isMoving){
+			if(angleAroundPlayer > 0){
+				if(angleAroundPlayer < -5){
+					float change = -angleAroundPlayer;
+					angleAroundPlayer -= change;
+				}else{
+					angleAroundPlayer-=5;
+				}
+			}else if(angleAroundPlayer < 0){
+				if(angleAroundPlayer > -5){
+					float change = -angleAroundPlayer;
+					angleAroundPlayer += change;
+				}else{
+					angleAroundPlayer+=5;
+				}
+			}else{
+				angleAroundPlayer = 0;
+			}
+		}
 	}
 	
 }

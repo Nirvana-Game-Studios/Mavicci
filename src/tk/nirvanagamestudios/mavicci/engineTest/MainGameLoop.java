@@ -56,8 +56,8 @@ import tk.nirvanagamestudios.mavicci.world.WorldReader;
  * Texture Atlas - Done - 16/05/15
  * Multiple Lights - Done - 17/05/15
  * Point Lights - Done - 26/05/15
- * Day and Night Cycle
- * Skybox
+ * Day and Night Cycle - 03/06/15
+ * Skybox - Done - 03/06/15
  * Mouse Picking - Done - 26/17/15
  */
 
@@ -86,9 +86,6 @@ public class MainGameLoop {
 		ModelTexture grassTexture = new ModelTexture(loader.loadTexture("grassTexture"));
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), grassTexture);
 		
-		ModelTexture stallTexture = new ModelTexture(loader.loadTexture("stallTexture"));
-		TexturedModel stall = new TexturedModel(OBJLoader.loadObjModel("stall", loader), stallTexture);
-		
 		ModelTexture treeTexture = new ModelTexture(loader.loadTexture("tree"));
 		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("tree", loader), treeTexture);
 		
@@ -101,9 +98,9 @@ public class MainGameLoop {
 		lamp.getTexture().setUseFakeLighting(true);
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("path"));
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grass"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
 		
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
@@ -114,9 +111,9 @@ public class MainGameLoop {
 		RawModel player = OBJLoader.loadObjModel("player", loader);
 		ModelTexture playerTexture = new ModelTexture(loader.loadTexture("playerTexture"));
 		TexturedModel playerModel = new TexturedModel(player, playerTexture);
-		Player playerEntity = new Player(playerModel, new Vector3f(-239.43553f, terrain.getHeightOfTerrain(terrain.getX(), terrain.getZ()), -265.49652f), 0, 0, 0, 1);
+		Player playerEntity = new Player(playerModel, new Vector3f(-239.43553f, terrain.getHeightOfTerrain(terrain.getX(), terrain.getZ()), -265.49652f), 0, 0, 0, 0.9f);
 		
-		Light light = new Light(new Vector3f(0f, 10000f, -7000f), new Vector3f(0.f, 0.f, 0.f));
+		Light light = new Light(new Vector3f(0f, 10000f, -7000f), new Vector3f(1f, 1f, 1f));
 		lights.add(light);
 		for(int i = 0; i < 4; i++){
 			float x, y, z;
@@ -188,8 +185,8 @@ public class MainGameLoop {
 		entities.add(entity);
 		while (!Display.isCloseRequested()) {
 			// entity.increaseRotation(0, 5, 0);
-			camera.move();
 			playerEntity.move(terrain);
+			camera.move();
 			/*picker.update();
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
 			//entity.setPosition(terrainPoint);
@@ -201,15 +198,15 @@ public class MainGameLoop {
 				}
 			}
 			*/
-			System.out.println(playerEntity.getPosition());
+			//System.out.println(playerEntity.getPosition());
 			for(Entity e:entities){				
 				renderer.processEntity(e);
 			}
 			renderer.processEntity (playerEntity);
 			renderer.processTerrain(terrain);
 			//renderer.processTerrain(terrain1);
-			renderer.render(lights, camera);
 			guiRenderer.render(guis);
+			renderer.render(lights, camera);
 			displayManager.updateDisplay();
 		}
 

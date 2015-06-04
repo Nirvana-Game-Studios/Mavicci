@@ -5,7 +5,9 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
+import tk.nirvanagamestudios.mavicci.engineTest.MainGameLoop;
 import tk.nirvanagamestudios.mavicci.entities.Camera;
 import tk.nirvanagamestudios.mavicci.models.RawModel;
 import tk.nirvanagamestudios.mavicci.renderEngine.DisplayManager;
@@ -102,18 +104,22 @@ public class SkyboxRenderer {
 		if(time >= 0 && time < 120000){
 			texture1 = texture;
 			texture2 = texture;
+			MainGameLoop.lights.get(0).setColour(new Vector3f(1f,1f,1f));
 			blendFactor = (time - 0)/(12000 - 0);
 		}else if(time >= 120000 && time < 170000){
 			texture1 = texture;
 			texture2 = nightTexture;
+			MainGameLoop.lights.get(0).setColour(new Vector3f(0.8f,0.8f,0.8f));
 			blendFactor = (time - 120000)/(170000 - 120000);
 		}else if(time >= 170000 && time < 200000){
 			texture1 = nightTexture;
-			texture2 = nightTexture ;
+			texture2 = nightTexture;
+			MainGameLoop.lights.get(0).setColour(new Vector3f(0.6f,0.6f,0.6f));
 			blendFactor = (time - 170000)/(200000 - 170000);
 		}else{
 			texture1 = nightTexture;
 			texture2 = texture;
+			MainGameLoop.lights.get(0).setColour(new Vector3f(0.8f,0.8f,0.8f));
 			blendFactor = (time - 200000)/(240000 - 200000);
 		}
 
