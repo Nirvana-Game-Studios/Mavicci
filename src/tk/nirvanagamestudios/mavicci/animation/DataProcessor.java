@@ -3,7 +3,6 @@ package tk.nirvanagamestudios.mavicci.animation;
 import java.util.List;
 
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Quaternion;
 
 public class DataProcessor {
 
@@ -18,7 +17,8 @@ public class DataProcessor {
 		List<AnimationSection> children = section.getChildren();
 		for (AnimationSection child : children) {
 			Matrix4f childMatrix = child.getAccumulatedMatrix();
-			Matrix4f.mul(section.getAccumulatedMatrix(), childMatrix, childMatrix);
+			Matrix4f.mul(section.getAccumulatedMatrix(), childMatrix,
+					childMatrix);
 			matrixStuff(child);
 		}
 	}
@@ -46,17 +46,19 @@ public class DataProcessor {
 		if ((Math.abs(frameMatrix.m01 + frameMatrix.m10) < 0.001)
 				&& (Math.abs(frameMatrix.m20 + frameMatrix.m02) < 0.001)
 				&& (Math.abs(frameMatrix.m12 + frameMatrix.m21) < 0.001)
-				&& (Math.abs(frameMatrix.m00 + frameMatrix.m11 + frameMatrix.m22 - 3) < 0.001)) {
+				&& (Math.abs(frameMatrix.m00 + frameMatrix.m11
+						+ frameMatrix.m22 - 3) < 0.001)) {
 			return new double[] { 0, 1, 0, 0 };
 		}
 
-		axisAngle[0] = Math.acos((frameMatrix.m00 + frameMatrix.m11 + frameMatrix.m22 - 1) / 2);
+		axisAngle[0] = Math.acos((frameMatrix.m00 + frameMatrix.m11
+				+ frameMatrix.m22 - 1) / 2);
 		axisAngle[1] = -(frameMatrix.m12 - frameMatrix.m21)
 				/ Math.sqrt(Math.pow((frameMatrix.m12 - frameMatrix.m21), 2)
 						+ Math.pow((frameMatrix.m20 - frameMatrix.m02), 2)
 						+ Math.pow((frameMatrix.m01 - frameMatrix.m10), 2));
-		axisAngle[3] = ((frameMatrix.m20 - frameMatrix.m02) / Math.sqrt(Math.pow(
-				(frameMatrix.m12 - frameMatrix.m21), 2)
+		axisAngle[3] = ((frameMatrix.m20 - frameMatrix.m02) / Math.sqrt(Math
+				.pow((frameMatrix.m12 - frameMatrix.m21), 2)
 				+ Math.pow((frameMatrix.m20 - frameMatrix.m02), 2)
 				+ Math.pow((frameMatrix.m01 - frameMatrix.m10), 2)));
 		axisAngle[2] = -(frameMatrix.m01 - frameMatrix.m10)
@@ -102,7 +104,7 @@ public class DataProcessor {
 		for (RawKeyFrame frame : frames) {
 			Matrix4f frameMatrix = frame.getTransformation();
 
-			//The code below works. Iunno how, it just does.
+			// The code below works. Iunno how, it just does.
 			Matrix4f justTranslate = extractTranslationMatrix(frameMatrix);
 			Matrix4f translateMatrix = new Matrix4f(section.getStartMatrix());
 			translateMatrix.m30 = justTranslate.m30;
@@ -112,13 +114,13 @@ public class DataProcessor {
 			Matrix4f.mul(rot, translateMatrix, translateMatrix);
 			Matrix4f.mul(translateMatrix, inverted, translateMatrix);
 			// pos
-			
+
 			// rot
 			Matrix4f.mul(inverse, frameMatrix, frameMatrix);
 			Matrix4f.mul(rot, frameMatrix, frameMatrix);
 			Matrix4f.mul(frameMatrix, inverted, frameMatrix);
 			// rot
-			
+
 			frameMatrix.m30 = translateMatrix.m30;
 			frameMatrix.m31 = translateMatrix.m31;
 			frameMatrix.m32 = translateMatrix.m32;
@@ -152,31 +154,32 @@ public class DataProcessor {
 		return quaternion;
 	}
 
-	public static Matrix4f convertQuaternionToMatrix4f(Quaternion q){
-        Matrix4f matrix = new Matrix4f();
-        matrix.m00 = 1.0f - 2.0f * ( q.getY() * q.getY() + q.getZ() * q.getZ() );
-        matrix.m01 = 2.0f * (q.getX() * q.getY() + q.getZ() * q.getW());
-        matrix.m02 = 2.0f * (q.getX() * q.getZ() - q.getY() * q.getW());
-        matrix.m03 = 0.0f;
- 
-        matrix.m10 = 2.0f * ( q.getX() * q.getY() - q.getZ() * q.getW() );
-        matrix.m11 = 1.0f - 2.0f * ( q.getX() * q.getX() + q.getZ() * q.getZ() );
-        matrix.m12 = 2.0f * (q.getZ() * q.getY() + q.getX() * q.getW() );
-        matrix.m13 = 0.0f;
- 
-        matrix.m20 = 2.0f * ( q.getX() * q.getZ() + q.getY() * q.getW() );
-        matrix.m21 = 2.0f * ( q.getY() * q.getZ() - q.getX() * q.getW() );
-        matrix.m22 = 1.0f - 2.0f * ( q.getX() * q.getX() + q.getY() * q.getY() );
-        matrix.m23 = 0.0f;
- 
-        matrix.m30 = 0;
-        matrix.m31 = 0;
-        matrix.m32 = 0;
-        matrix.m33 = 1.0f;
-  
-        return matrix;
-    }
-	
+	public static Matrix4f convertQuaternionToMatrix4f(double[] q) {
+		Matrix4f matrix = new Matrix4f();
+		q = new double[4];
+		matrix.m00 = (float) (1.0f - 2.0f * (q[1] * q[1] + q[2] * q[2]));
+		matrix.m01 = (float) (2.0f * (q[0] * q[1] + q[2] * q[3]));
+		matrix.m02 = (float) (2.0f * (q[0] * q[2] - q[1] * q[3]));
+		matrix.m03 = 0.0f;
+
+		matrix.m10 = (float) (2.0f * (q[0] * q[1] - q[2] * q[3]));
+		matrix.m11 = (float) (1.0f - 2.0f * (q[0] * q[0] + q[2] * q[2]));
+		matrix.m12 = (float) (2.0f * (q[2] * q[1] + q[0] * q[3]));
+		matrix.m13 = 0.0f;
+
+		matrix.m20 = (float) (2.0f * (q[0] * q[2] + q[1] * q[3]));
+		matrix.m21 = (float) (2.0f * (q[1] * q[2] - q[0] * q[3]));
+		matrix.m22 = (float) (1.0f - 2.0f * (q[1] * q[1] + q[0] + q[0]));
+		matrix.m23 = 0.0f;
+
+		matrix.m30 = 0;
+		matrix.m31 = 0;
+		matrix.m32 = 0;
+		matrix.m33 = 1.0f;
+
+		return matrix;
+	}
+
 	public static float[] getTranslation(Matrix4f matrix) {
 		float[] translate = new float[3];
 		translate[0] = matrix.m30;
@@ -184,18 +187,18 @@ public class DataProcessor {
 		translate[2] = matrix.m32;
 		return translate;
 	}
-	
-	public static void setDefaultAnimationLength(Animation animation){
+
+	public static void setDefaultAnimationLength(Animation animation) {
 		int longestTime = 0;
 		AnimationSection[] sections = animation.getSections();
-		for(AnimationSection section:sections){
+		for (AnimationSection section : sections) {
 			Frame[] frames = section.getFrames();
-			for(Frame frame:frames){
+			for (Frame frame : frames) {
 				int time = frame.getTime();
-				if(time>longestTime){
+				if (time > longestTime) {
 					longestTime = time;
 				}
-				
+
 			}
 		}
 		animation.setLengthInMillis(longestTime);
@@ -233,9 +236,10 @@ public class DataProcessor {
 		Frame previous = frames[0];
 		for (int i = 1; i < frames.length; i++) {
 			Frame next = frames[i];
-			double[] qA = { previous.getRotW(), previous.getRotX(), previous.getRotY(),
-					previous.getRotZ() };
-			double[] qB = { next.getRotW(), next.getRotX(), next.getRotY(), next.getRotZ() };
+			double[] qA = { previous.getRotW(), previous.getRotX(),
+					previous.getRotY(), previous.getRotZ() };
+			double[] qB = { next.getRotW(), next.getRotX(), next.getRotY(),
+					next.getRotZ() };
 			double angleBetween = getAngleBetweenQuaternions(qA, qB);
 			int timePassed = next.getTime() - previous.getTime();
 			double changePerMilli = angleBetween / timePassed;
@@ -275,7 +279,8 @@ public class DataProcessor {
 	}
 
 	private static double getAngleBetweenQuaternions(double[] qA, double[] qB) {
-		double dot = qA[0] * qB[0] + qA[1] * qB[1] + qA[2] * qB[2] + qA[3] * qB[3];
+		double dot = qA[0] * qB[0] + qA[1] * qB[1] + qA[2] * qB[2] + qA[3]
+				* qB[3];
 		return Math.acos(dot);
 	}
 
