@@ -1,4 +1,4 @@
-package tk.nirvanagamestudios.mavicci.shaders;
+package tk.nirvanagamestudios.mavicci.worldEditor.shaders;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -76,6 +76,10 @@ public abstract class ShaderProgram {
 		GL20.glUniform1i(location, value);
 	}
 	
+	protected void load4DVector(int location, Vector4f value){
+		GL20.glUniform4f(location, value.x, value.y, value.z, value.w);
+	}
+	
 	protected void loadBoolean(int location, boolean value){
 		float toLoad = 0;
 		if(value){
@@ -116,10 +120,6 @@ public abstract class ShaderProgram {
 			System.exit(-1);
 		}
 		return shaderID;
-	}
-
-	public void load4DVector(int location_plane, Vector4f value) {
-		GL20.glUniform4f(location_plane, value.x, value.y, value.z, value.w);
 	}
 
 }

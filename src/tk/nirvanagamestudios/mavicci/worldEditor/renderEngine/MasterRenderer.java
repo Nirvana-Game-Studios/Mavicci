@@ -1,4 +1,4 @@
-package tk.nirvanagamestudios.mavicci.renderEngine;
+package tk.nirvanagamestudios.mavicci.worldEditor.renderEngine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,17 +8,14 @@ import java.util.Map;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 
-import tk.nirvanagamestudios.mavicci.entities.Camera;
-import tk.nirvanagamestudios.mavicci.entities.Entity;
-import tk.nirvanagamestudios.mavicci.entities.Light;
-import tk.nirvanagamestudios.mavicci.models.TexturedModel;
-import tk.nirvanagamestudios.mavicci.shaders.StaticShader;
-import tk.nirvanagamestudios.mavicci.shaders.TerrainShader;
-import tk.nirvanagamestudios.mavicci.skybox.SkyboxRenderer;
-import tk.nirvanagamestudios.mavicci.terrains.Terrain;
+import tk.nirvanagamestudios.mavicci.worldEditor.entities.Camera;
+import tk.nirvanagamestudios.mavicci.worldEditor.entities.Entity;
+import tk.nirvanagamestudios.mavicci.worldEditor.entities.Light;
+import tk.nirvanagamestudios.mavicci.worldEditor.models.TexturedModel;
+import tk.nirvanagamestudios.mavicci.worldEditor.shaders.StaticShader;
+import tk.nirvanagamestudios.mavicci.worldEditor.shaders.TerrainShader;
+import tk.nirvanagamestudios.mavicci.worldEditor.terrains.Terrain;
 
 public class MasterRenderer {
 
@@ -40,15 +37,12 @@ public class MasterRenderer {
 	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private List<Terrain> terrains = new ArrayList<Terrain>();
-
-	private SkyboxRenderer skyboxRenderer;
 	
-	public MasterRenderer(Loader loader){
+	public MasterRenderer(){
 		enableCulling();
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
-		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 	}
 	
 	public static void enableCulling(){
@@ -66,35 +60,20 @@ public class MasterRenderer {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
-	public void renderScene(List<Entity> entities, List<Terrain> terrains, List<Light> lights, Camera camera, Vector4f clipPlane){
-		for(Entity e:entities){
-			if(e.getPosition().y > 8){
-				processEntity(e);
-			}
-		}
-		for(Terrain t:terrains){
-			processTerrain(t);
-		}
-		render(lights, camera, clipPlane);
-	}
-	
-	public void render(List<Light> lights, Camera camera, Vector4f clipPlane){
+	public void render(List<Light> lights, Camera camera){
 		prepare();
 		shader.start();
-		shader.loadPlane(clipPlane.x, clipPlane.y, clipPlane.z, clipPlane.w);
 		shader.loadSkyColour(RED, GREEN, BLUE);
 		shader.loadLights(lights);
 		shader.loadViewMatrix(camera);
 		renderer.render(entities);
 		shader.stop();
 		terrainShader.start();
-		terrainShader.loadPlane(clipPlane.x, clipPlane.y, clipPlane.z, clipPlane.w);
 		terrainShader.loadSkyColour(RED, GREEN, BLUE);
 		terrainShader.loadLights(lights);
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
-		skyboxRenderer.render(camera, RED, GREEN, BLUE);
 		terrains.clear();
 		entities.clear();
 	}

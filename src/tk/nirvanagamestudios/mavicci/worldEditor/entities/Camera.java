@@ -1,4 +1,4 @@
-package tk.nirvanagamestudios.mavicci.entities;
+package tk.nirvanagamestudios.mavicci.worldEditor.entities;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -22,9 +22,6 @@ public class Camera {
 	}
 	
 	public void move(){	
-		calculateZoom();
-		calculatePitch();
-		calculateAngleAroundPlayer();
 		float horizDistance = calculateHorizDistance();
 		float verticalDistance = calculateVerticalDistance();
 		calculateCameraPosition(horizDistance, verticalDistance);
@@ -43,10 +40,6 @@ public class Camera {
 	public float getPitch() {
 		return pitch;
 	}
-	
-	public void invertPitch(){
-		pitch = -pitch;
-	}
 
 	public float getYaw() {
 		return yaw;
@@ -57,7 +50,7 @@ public class Camera {
 	}
 	
 	private void calculateCameraPosition(float horizDist, float vertDist){
-		float theta = player.getRotY() + angleAroundPlayer;
+		float theta = player.getRotY();
 		float dx = (float) (horizDist * Math.sin(Math.toRadians(theta)));
 		float dz = (float) (horizDist * Math.cos(Math.toRadians(theta)));
 		position.y = player.getPosition().y + vertDist;
@@ -78,37 +71,6 @@ public class Camera {
 		distanceFromPlayer -= zoomLevel;
 	}
 	
-	private void calculatePitch(){
-		if(Mouse.isButtonDown(1)){
-			float pitchChange = Mouse.getDY() * 0.1f;
-			pitch -= pitchChange;
-		}
-	}
 	
-	private void calculateAngleAroundPlayer(){
-		if(Mouse.isButtonDown(0)){
-			float angleChange = Mouse.getDX() * 0.3f;
-			angleAroundPlayer -= angleChange;
-		}
-		if(player.isMoving){
-			if(angleAroundPlayer > 0){
-				if(angleAroundPlayer < -5){
-					float change = -angleAroundPlayer;
-					angleAroundPlayer -= change;
-				}else{
-					angleAroundPlayer-=5;
-				}
-			}else if(angleAroundPlayer < 0){
-				if(angleAroundPlayer > -5){
-					float change = -angleAroundPlayer;
-					angleAroundPlayer += change;
-				}else{
-					angleAroundPlayer+=5;
-				}
-			}else{
-				angleAroundPlayer = 0;
-			}
-		}
-	}
 	
 }
