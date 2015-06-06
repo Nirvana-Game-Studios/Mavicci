@@ -3,6 +3,7 @@ package tk.nirvanagamestudios.mavicci.animation;
 import java.util.List;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Quaternion;
 
 public class DataProcessor {
 
@@ -151,6 +152,31 @@ public class DataProcessor {
 		return quaternion;
 	}
 
+	public static Matrix4f convertQuaternionToMatrix4f(Quaternion q){
+        Matrix4f matrix = new Matrix4f();
+        matrix.m00 = 1.0f - 2.0f * ( q.getY() * q.getY() + q.getZ() * q.getZ() );
+        matrix.m01 = 2.0f * (q.getX() * q.getY() + q.getZ() * q.getW());
+        matrix.m02 = 2.0f * (q.getX() * q.getZ() - q.getY() * q.getW());
+        matrix.m03 = 0.0f;
+ 
+        matrix.m10 = 2.0f * ( q.getX() * q.getY() - q.getZ() * q.getW() );
+        matrix.m11 = 1.0f - 2.0f * ( q.getX() * q.getX() + q.getZ() * q.getZ() );
+        matrix.m12 = 2.0f * (q.getZ() * q.getY() + q.getX() * q.getW() );
+        matrix.m13 = 0.0f;
+ 
+        matrix.m20 = 2.0f * ( q.getX() * q.getZ() + q.getY() * q.getW() );
+        matrix.m21 = 2.0f * ( q.getY() * q.getZ() - q.getX() * q.getW() );
+        matrix.m22 = 1.0f - 2.0f * ( q.getX() * q.getX() + q.getY() * q.getY() );
+        matrix.m23 = 0.0f;
+ 
+        matrix.m30 = 0;
+        matrix.m31 = 0;
+        matrix.m32 = 0;
+        matrix.m33 = 1.0f;
+  
+        return matrix;
+    }
+	
 	public static float[] getTranslation(Matrix4f matrix) {
 		float[] translate = new float[3];
 		translate[0] = matrix.m30;

@@ -3,10 +3,12 @@ package tk.nirvanagamestudios.mavicci.shaders;
 import java.util.List;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import tk.nirvanagamestudios.mavicci.animation.DataProcessor;
 import tk.nirvanagamestudios.mavicci.entities.Camera;
 import tk.nirvanagamestudios.mavicci.entities.Light;
 import tk.nirvanagamestudios.mavicci.util.Maths;
@@ -29,6 +31,7 @@ public class StaticShader extends ShaderProgram{
 	private int location_numberOfRows;
 	private int location_useFakeLighting;
 	private int location_plane;
+	private int location_rotMatrix;
 	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -53,6 +56,7 @@ public class StaticShader extends ShaderProgram{
 		location_numberOfRows = super.getUniformLocation("numberOfRows");
 		location_useFakeLighting = super.getUniformLocation("useFakeLighting");
 		location_plane = super.getUniformLocation("plane");
+		location_rotMatrix = super.getUniformLocation("rotMatrix");
 		
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColour = new int[MAX_LIGHTS];
@@ -66,6 +70,10 @@ public class StaticShader extends ShaderProgram{
 	
 	public void loadPlane(float a, float b, float c, float d){
 		super.load4DVector(location_plane, new Vector4f(a,b,c,d));
+	}
+	
+	public void loadRotationMatrix(Quaternion q){
+		DataProcessor.convertQuaternionToMatrix4f(q);
 	}
 	
 	public void loadFakeLighting(boolean useFakeLighting){

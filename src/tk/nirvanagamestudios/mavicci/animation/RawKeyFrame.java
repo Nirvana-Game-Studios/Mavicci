@@ -66,11 +66,11 @@ public class RawKeyFrame {
 						+ Math.pow((frameMatrix.m20 - frameMatrix.m02), 2)
 						+ Math.pow((frameMatrix.m01 - frameMatrix.m10), 2)));
 		System.out.println();
-		//double[] rotation = DataProcessor.matrixToQuaternion(frameMatrix);
+		double[] rotation = DataProcessor.matrixToQuaternion(frameMatrix);
 		float[] translation = DataProcessor.getTranslation(frameMatrix);
 		
 		System.out.println("translation: "+translation[0]+", "+translation[1]+", "+translation[2]);
-		//System.out.println("Rotation: "+rotation[0]+", "+rotation[1]+", "+rotation[2]+", "+rotation[3]);
+		System.out.println("Rotation: "+rotation[0]+", "+rotation[1]+", "+rotation[2]+", "+rotation[3]);
 		System.out.println();
 	}
 	
