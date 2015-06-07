@@ -66,6 +66,7 @@ import tk.nirvanagamestudios.mavicci.world.WorldReader;
  * Day and Night Cycle - 03/06/15
  * Skybox - Done - 03/06/15
  * Mouse Picking - Done - 26/17/15
+ * Animation - In Completion...
  * Water Engine - In Completion...
  */
 
@@ -107,7 +108,7 @@ public class MainGameLoop {
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grass"));
+		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("rock"));
 		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
 		
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
