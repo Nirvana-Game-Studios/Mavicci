@@ -3,8 +3,6 @@ package tk.nirvanagamestudios.mavicci.renderEngine;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -21,11 +19,10 @@ public class DisplayManager {
 	
 	public void createDisplay(){
 		
-		ContextAttribs attribs = new ContextAttribs(3, 3).withForwardCompatible(true).withProfileCore(true);
 		try{
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 			Display.setTitle("Mavicci");
-			Display.create(new PixelFormat(), attribs);
+			Display.create(new PixelFormat());
 			//Mouse.setGrabbed(true);
 		}catch(LWJGLException e){
 			e.printStackTrace();

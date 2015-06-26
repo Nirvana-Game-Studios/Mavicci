@@ -5,6 +5,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
+import tk.nirvanagamestudios.mavicci.renderEngine.DisplayManager;
+
 public class Camera {
 
 	private float distanceFromPlayer = 50;
@@ -94,16 +96,16 @@ public class Camera {
 			if(angleAroundPlayer > 0){
 				if(angleAroundPlayer < -5){
 					float change = -angleAroundPlayer;
-					angleAroundPlayer -= change;
+					angleAroundPlayer -= (change * DisplayManager.getFrameTimeSeconds());
 				}else{
-					angleAroundPlayer-=5;
+					angleAroundPlayer-= (5 * DisplayManager.getFrameTimeSeconds());
 				}
 			}else if(angleAroundPlayer < 0){
 				if(angleAroundPlayer > -5){
 					float change = -angleAroundPlayer;
-					angleAroundPlayer += change;
+					angleAroundPlayer += (change * DisplayManager.getFrameTimeSeconds());
 				}else{
-					angleAroundPlayer+=5;
+					angleAroundPlayer+= (5 * DisplayManager.getFrameTimeSeconds());
 				}
 			}else{
 				angleAroundPlayer = 0;

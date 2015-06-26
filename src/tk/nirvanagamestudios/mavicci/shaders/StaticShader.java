@@ -32,6 +32,8 @@ public class StaticShader extends ShaderProgram{
 	private int location_useFakeLighting;
 	private int location_plane;
 	
+	public static final int MAX_LIGHTS = 4;
+	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
 	}

@@ -11,18 +11,27 @@ import org.lwjgl.util.vector.Vector3f;
 
 import tk.nirvanagamestudios.mavicci.entities.Camera;
 import tk.nirvanagamestudios.mavicci.models.RawModel;
+import tk.nirvanagamestudios.mavicci.renderEngine.DisplayManager;
 import tk.nirvanagamestudios.mavicci.renderEngine.Loader;
 import tk.nirvanagamestudios.mavicci.util.Maths;
 
 public class WaterRenderer {
 
+	private static final String DUDV_MAP = "waterDUDV";
+	private static final float WAVE_SPEED = 0.03f;
+	
 	private RawModel quad;
 	private WaterShader shader;
 	private WaterFrameBuffers fbos;
 
+	private float moveFactor = 0;
+	
+	private int dudvTexture;
+	
 	public WaterRenderer(Loader loader, WaterShader shader, Matrix4f projectionMatrix, WaterFrameBuffers fbos) {
 		this.shader = shader;
 		this.fbos = fbos;
+		dudvTexture = loader.loadTexture(DUDV_MAP);
 		shader.start();
 		shader.connectTextureUnits();
 		shader.loadProjectionMatrix(projectionMatrix);
@@ -45,12 +54,17 @@ public class WaterRenderer {
 	private void prepareRender(Camera camera){
 		shader.start();
 		shader.loadViewMatrix(camera);
+		moveFactor += WAVE_SPEED * DisplayManager.getFrameTimeSeconds();
+		moveFactor %= 1;
+		shader.loadMoveFactor(moveFactor);
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fbos.getReflectionTexture());
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fbos.getRefractionTexture());
+		GL13.glActiveTexture(GL13.GL_TEXTURE2);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, dudvTexture);
 	}
 	
 	private void unbind(){
@@ -60,7 +74,7 @@ public class WaterRenderer {
 	}
 
 	private void setUpVAO(Loader loader) {
-		// Just x and z vectex positions here, y is set to 0 in v.shader
+		// Just x and z vertex positions here, y is set to 0 in v.shader
 		float[] vertices = { -1, -1, -1, 1, 1, -1, 1, -1, -1, 1, 1, 1 };
 		quad = loader.loadToVao(vertices, 2);
 	}

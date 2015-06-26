@@ -12,6 +12,8 @@ import tk.nirvanagamestudios.mavicci.util.Maths;
 
 public class TerrainShader extends ShaderProgram {
 
+	
+	
 	private static final String VERTEX_FILE = "res/shaders/terrainVertexShader.vert";
 	private static final String FRAGMENT_FILE = "res/shaders/terrainFragmentShader.frag";
 	
@@ -30,6 +32,8 @@ public class TerrainShader extends ShaderProgram {
 	private int location_bTexture;
 	private int location_blendMap;
 	private int location_plane;
+	
+	private static final int MAX_LIGHTS = 10;
 	
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);

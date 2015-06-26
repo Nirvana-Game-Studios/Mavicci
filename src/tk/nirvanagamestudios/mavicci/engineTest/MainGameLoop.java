@@ -77,6 +77,10 @@ public class MainGameLoop {
 	public static List<Terrain> terrains = new ArrayList<Terrain>();
 	public static List<Light> lights = new ArrayList<Light>();
 	public static MasterRenderer renderer;
+	public static Loader loader;
+	public static WaterShader waterShader;
+	public static GuiRenderer guiRenderer;
+	public static WaterFrameBuffers waterFBOs;
 	public static Random random = new Random(676452);
 	
 	public static void main(String[] args) {
@@ -84,7 +88,7 @@ public class MainGameLoop {
 		DisplayManager displayManager = new DisplayManager();
 		displayManager.createDisplay();
 
-		Loader loader = new Loader();
+		loader = new Loader();
 		renderer = new MasterRenderer(loader);
 		
 		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
@@ -94,10 +98,7 @@ public class MainGameLoop {
 		
 		ModelTexture grassTexture = new ModelTexture(loader.loadTexture("grassTexture"));
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), grassTexture);
-		
-		ModelTexture treeTexture = new ModelTexture(loader.loadTexture("tree"));
-		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("tree", loader), treeTexture);
-		
+			
 		ModelTexture pineTexture = new ModelTexture(loader.loadTexture("pine"));
 		TexturedModel pine = new TexturedModel(OBJLoader.loadObjModel("pine", loader), pineTexture);
 
@@ -145,8 +146,8 @@ public class MainGameLoop {
 		
 		Camera camera = new Camera(player);
 
-		WaterFrameBuffers waterFBOs = new WaterFrameBuffers();
-		WaterShader waterShader = new WaterShader();
+		waterShader = new WaterShader();
+		waterFBOs = new WaterFrameBuffers();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), waterFBOs);
 		List<WaterTile> waterTiles = new ArrayList<WaterTile>();
 		WaterTile tile1 = new WaterTile(-428,-365,6);
@@ -154,12 +155,7 @@ public class MainGameLoop {
 		
 		
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
-		//GuiTexture waterReflection = new GuiTexture(waterFBOs.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-		//GuiTexture waterRefraction = new GuiTexture(waterFBOs.getRefractionTexture(), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-		//guis.add(waterReflection);
-		//guis.add(waterRefraction);
-		
-		GuiRenderer guiRenderer = new GuiRenderer(loader);
+		guiRenderer = new GuiRenderer(loader);
 		
 		
 		for(int i = 0; i < 400; i++){
@@ -189,7 +185,8 @@ public class MainGameLoop {
 				float z = random.nextFloat() * -600;
 				float y = terrain.getHeightOfTerrain(x, z);
 				
-				entities.add(new Entity(tree, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
+				lights.add(new Light(new Vector3f(x, y + 12f, z), new Vector3f(0,0,1), new Vector3f(1f, 0.01f, 0.002f)));
+				entities.add(new Entity(lamp, new Vector3f(x, y, z), 0, random.nextFloat(), 0, 1f, random.nextInt(4)));
 			}
 		}
 		
@@ -207,7 +204,24 @@ public class MainGameLoop {
 			player.move(terrain);
 			camera.move();
 			picker.update();
-			System.out.println(player.getPosition());
+			//System.out.println(player.getPosition());
+			
+			/*List<Entity> entitiesInOrder = new ArrayList<Entity>();
+			for(Entity e:entities){
+				while(!entitiesInOrder.contains(e)){
+					if((entities.indexOf(e) - 1) != -1){
+						if(e.getPosition().getX() > entities.get(entities.indexOf(e) - 1).getPosition().getX()){
+							if(e.getPosition().getY() > entities.get(entities.indexOf(e) - 1).getPosition().getY()){
+								if(e.getPosition().getZ() > entities.get(entities.indexOf(e) - 1).getPosition().getZ()){
+									entitiesInOrder.add(e);
+									System.out.println(e.getPosition());
+									break;
+								}
+							}
+						}
+					}
+				}
+			}*/
 			
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			
@@ -227,19 +241,23 @@ public class MainGameLoop {
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			waterFBOs.unbindCurrentFrameBuffer();
 			renderer.processEntity(player);
-			renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0,0,0,100000));
+			renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0,0,0,Integer.MAX_VALUE));
 			waterRenderer.render(waterTiles, camera);
 			guiRenderer.render(guis);
 			
 			displayManager.updateDisplay();
 		}
 
+		cleanUp();
+		displayManager.stopDisplay();
+	}
+	
+	private static void cleanUp(){
 		waterFBOs.cleanUp();
 		waterShader.cleanUp();
 		guiRenderer.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
-		displayManager.stopDisplay();
 	}
 
 	public static Entity createEntity(TexturedModel model, Vector3f pos,

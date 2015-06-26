@@ -19,8 +19,6 @@ public abstract class ShaderProgram {
 	private int vertexShaderID;
 	private int fragmentShaderID;
 	
-	protected static final int MAX_LIGHTS = 4;
-	
 	private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 	
 	public ShaderProgram(String vertexFile,String fragmentFile){
