@@ -2,6 +2,7 @@ package tk.nirvanagamestudios.mavicci.water;
 
 import java.util.List;
 
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -31,6 +32,7 @@ public class WaterRenderer {
 	public WaterRenderer(Loader loader, WaterShader shader, Matrix4f projectionMatrix, WaterFrameBuffers fbos) {
 		this.shader = shader;
 		this.fbos = fbos;
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, 10.0f);
 		dudvTexture = loader.loadTexture(DUDV_MAP);
 		shader.start();
 		shader.connectTextureUnits();

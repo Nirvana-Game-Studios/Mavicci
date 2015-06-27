@@ -3,6 +3,7 @@ package tk.nirvanagamestudios.mavicci.renderEngine;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -23,7 +24,6 @@ public class DisplayManager {
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 			Display.setTitle("Mavicci");
 			Display.create(new PixelFormat());
-			//Mouse.setGrabbed(true);
 		}catch(LWJGLException e){
 			e.printStackTrace();
 		}
@@ -43,7 +43,6 @@ public class DisplayManager {
 	public void updateDisplay(){
 		Display.sync(FPS_CAP);
 		Display.update();
-		if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) System.exit(0);;
 		long currentFrameTime = getCurrentTime();
 		delta = (currentFrameTime - lastFrameTime) / 1000f;
 		lastFrameTime = currentFrameTime;

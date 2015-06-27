@@ -7,6 +7,7 @@ public class GuiTexture {
 	private int texture;
 	private Vector2f position;
 	private Vector2f scale;
+	private Vector2f size;
 	
 	public GuiTexture(int texture, Vector2f position, Vector2f scale) {
 		super();
@@ -14,11 +15,23 @@ public class GuiTexture {
 		this.position = position;
 		this.scale = scale;
 	}
+	
+	public GuiTexture(int texture, Vector2f position, Vector2f scale, Vector2f size) {
+		super();
+		this.texture = texture;
+		this.position = position;
+		this.scale = scale;
+		this.size = size;
+	}
 
 	public int getTexture() {
 		return texture;
 	}
 
+	public Vector2f getSize(){
+		return size;
+	}
+	
 	public Vector2f getPosition() {
 		return position;
 	}

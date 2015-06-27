@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -16,6 +18,7 @@ import tk.nirvanagamestudios.mavicci.entities.Camera;
 import tk.nirvanagamestudios.mavicci.entities.Entity;
 import tk.nirvanagamestudios.mavicci.entities.Light;
 import tk.nirvanagamestudios.mavicci.entities.Player;
+import tk.nirvanagamestudios.mavicci.guis.Button;
 import tk.nirvanagamestudios.mavicci.guis.GuiRenderer;
 import tk.nirvanagamestudios.mavicci.guis.GuiTexture;
 import tk.nirvanagamestudios.mavicci.models.RawModel;
@@ -76,12 +79,15 @@ public class MainGameLoop {
 	public static List<Entity> entities = new ArrayList<Entity>();
 	public static List<Terrain> terrains = new ArrayList<Terrain>();
 	public static List<Light> lights = new ArrayList<Light>();
+	public static List<GuiTexture> guis = new ArrayList<GuiTexture>();
 	public static MasterRenderer renderer;
 	public static Loader loader;
 	public static WaterShader waterShader;
 	public static GuiRenderer guiRenderer;
 	public static WaterFrameBuffers waterFBOs;
 	public static Random random = new Random(676452);
+	public static boolean inPause = false;
+	public static boolean exiting = false;
 	
 	public static void main(String[] args) {
 		System.setProperty("org.lwjgl.librarypath", new File("natives/windows/").getAbsolutePath());
@@ -117,6 +123,30 @@ public class MainGameLoop {
 		
 		Terrain terrain = createTerrain(-1, -1, loader, texturePack, blendMap, "heightmap");
 		//Terrain terrain1 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
+
+		List<Button> buttons = new ArrayList<Button>();
+		List<Button> pauseButtons = new ArrayList<Button>();
+
+		//Pause Menu GUI Initialisation Variable Code
+		GuiTexture pause = new GuiTexture(Loader.loadGUITexture("menuOverlay"), new Vector2f(0f,0f), new Vector2f(5.0f, 5.0f));
+		GuiTexture play = new GuiTexture(Loader.loadGUITexture("play"), new Vector2f(0.0f,0.8f), new Vector2f(0.2f,0.2f)); 
+		GuiTexture playHover = new GuiTexture(Loader.loadGUITexture("playHover"), new Vector2f(0.0f,0.8f), new Vector2f(0.2f,0.2f));
+		GuiTexture quit = new GuiTexture(Loader.loadGUITexture("quit"), new Vector2f(0.0f,0.4f), new Vector2f(0.2f,0.2f)); 
+		GuiTexture quitHover = new GuiTexture(Loader.loadGUITexture("quitHover"), new Vector2f(0.0f,0.4f), new Vector2f(0.2f,0.2f));
+		GuiTexture menu = new GuiTexture(Loader.loadGUITexture("menu"), new Vector2f(-0.5f,-1.0f), new Vector2f(0.5f, 0.5f));
+		GuiTexture menuHover = new GuiTexture(Loader.loadGUITexture("menuHover"), new Vector2f(-0.5f,-1.0f), new Vector2f(0.5f, 0.5f));
+		
+		Button pausePlay = new Button(play, playHover, "play");
+		Button pauseQuit = new Button(quit, quitHover, "quit");
+		
+		Button gameMenu = new Button(menu, menuHover, "menu");
+		
+		pauseButtons.add(pausePlay);
+		pauseButtons.add(pauseQuit);
+		
+		buttons.add(gameMenu);
+		
+		//Player Inititialisation
 		
 		RawModel playerRaw = OBJLoader.loadObjModel("player", loader);
 		ModelTexture playerTexture = new ModelTexture(loader.loadTexture("playerTexture"));
@@ -154,8 +184,13 @@ public class MainGameLoop {
 		waterTiles.add(tile1);
 		
 		
-		List<GuiTexture> guis = new ArrayList<GuiTexture>();
+		
 		guiRenderer = new GuiRenderer(loader);
+		//Button b = new Button(new GuiTexture(loader.loadTexture("texture"), new Vector2f(0.25f, 0.25f), new Vector2f(0.25f, 0.25f), new Vector2f(256, 256)), new GuiTexture(loader.loadTexture("texture1"), new Vector2f(0.25f, 0.25f), new Vector2f(0.25f, 0.25f), new Vector2f(256, 256)), "menu");
+		//buttons.add(b);
+		
+		//Item Initialisation
+		
 		
 		
 		for(int i = 0; i < 400; i++){
@@ -201,9 +236,12 @@ public class MainGameLoop {
 		entities.add(entity);
 		while (!Display.isCloseRequested()) {
 			// entity.increaseRotation(0, 5, 0);
-			player.move(terrain);
-			camera.move();
-			picker.update();
+			if(!inPause){
+				for(Button bu:buttons){ bu.update(); }
+				player.move(terrain);
+				camera.move();
+				picker.update();
+			}
 			//System.out.println(player.getPosition());
 			
 			/*List<Entity> entitiesInOrder = new ArrayList<Entity>();
@@ -223,29 +261,42 @@ public class MainGameLoop {
 				}
 			}*/
 			
-			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
-			
-			renderer.processEntity(player);
-			float distance = 2 * (camera.getPosition().y - tile1.getHeight());
-			camera.getPosition().y -= distance;
-			camera.invertPitch();
-			waterFBOs.bindReflectionFrameBuffer();
-			renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0,1,0,-tile1.getHeight()));
-			camera.getPosition().y += distance;
-			camera.invertPitch();
-			
-			renderer.processEntity(player);
-			waterFBOs.bindRefractionFrameBuffer();
-			renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0,-1,0,tile1.getHeight()));
-			
-			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
-			waterFBOs.unbindCurrentFrameBuffer();
+			if(!inPause){			
+				GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
+				renderer.processEntity(player);
+				float distance = 2 * (camera.getPosition().y - tile1.getHeight());
+				camera.getPosition().y -= distance;
+				camera.invertPitch();
+				waterFBOs.bindReflectionFrameBuffer();
+				renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0,1,0,-tile1.getHeight()));
+				camera.getPosition().y += distance;
+				camera.invertPitch();
+				
+				renderer.processEntity(player);
+				waterFBOs.bindRefractionFrameBuffer();
+				renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0,-1,0,tile1.getHeight()));
+				
+				GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
+				waterFBOs.unbindCurrentFrameBuffer();
+			}
 			renderer.processEntity(player);
 			renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0,0,0,Integer.MAX_VALUE));
 			waterRenderer.render(waterTiles, camera);
-			guiRenderer.render(guis);
-			
+			if(inPause){
+				for(Button pb:pauseButtons){ pb.update(); }
+				guiRenderer.renderButtons(pauseButtons);
+				guiRenderer.renderGUI(pause);
+				Mouse.setGrabbed(false);
+			}else{
+				guiRenderer.renderButtons(buttons);				
+				guiRenderer.render(guis);
+				Mouse.setGrabbed(true);
+			}
+			System.out.println(inPause);
 			displayManager.updateDisplay();
+			if(exiting){
+				break;
+			}
 		}
 
 		cleanUp();
@@ -268,6 +319,18 @@ public class MainGameLoop {
 			entities.add(entity);
 		}
 		return entity;
+	}
+	
+	public static void pause(){
+		inPause = true;
+	}
+	
+	public static void unpause(){
+		inPause = false;
+	}
+	
+	public static void exitGame(){
+		exiting = true;
 	}
 	
 	public static Terrain createTerrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap, String heightMap){
