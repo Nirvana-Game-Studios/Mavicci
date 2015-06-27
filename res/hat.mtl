@@ -1,0 +1,49 @@
+# Blender MTL File: 'WitchStuff.blend'
+# Material Count: 5
+
+newmtl interior
+Ns 154.901961
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.000000
+Ks 0.043915 0.043915 0.043915
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\User\AppData\Local\Temp\images.jpeg
+
+newmtl metal-used
+Ns 68.627451
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.583921 0.473381
+Ks 0.377019 0.377019 0.377019
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl pumpkin
+Ns 74.509804
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.250508 0.000000
+Ks 0.131403 0.131403 0.131403
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\User\AppData\Local\Temp\images.jpeg
+
+newmtl silk
+Ns 49.019608
+Ka 0.000000 0.000000 0.000000
+Kd 0.066683 0.066683 0.066683
+Ks 0.042857 0.042857 0.042857
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl velvet
+Ns 49.019608
+Ka 0.000000 0.000000 0.000000
+Kd 0.007711 0.007711 0.007711
+Ks 0.042857 0.042857 0.042857
+Ni 1.000000
+d 1.000000
+illum 2
